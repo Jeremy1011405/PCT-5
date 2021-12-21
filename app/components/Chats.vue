@@ -13,43 +13,52 @@
             :key="chat.chat_id"
             columns="3*, 2*, 4*, 4*, 2*"
             class="chat-container"
-            @tap="goChat(chat.receiver_id)"
-            >
-              <!-- profile picture -->
-              <GridLayout row="0" rowSpan="2" col="0">
-                <Image :src="chat.pfp_url" class="chat-profile-pic"></Image>
-              </GridLayout>
-              <!-- username/last message -->
-              <GridLayout row="0" col="1" colSpan="3" >
-                <Label textWrap="true" class="chat-text" ref="chatText" >
-                  <FormattedString>
-                    <Span :text="`${format(chat.username)} \n`" fontWeight="bold"></Span>
-                    <Span :text="format(chat.last_message)"></Span>
-                  </FormattedString>
-                </Label>
-              </GridLayout>
-              <!-- time last message received/sent -->
-              <GridLayout row="1" col="5">
-                <Label
-                  :text="chat.message_time"
-                  class="chat-time-passed"
-                  textWrap="true"
-                ></Label>
-              </GridLayout>    
-            </Gridlayout>
-            <!-- end chats with ender so chats don't fall behind bottom actionbar /-->
+            @tap="goChat($event, chat)"
+          >
+            <!-- profile picture -->
+            <GridLayout row="0" rowSpan="2" col="0">
+              <Image :src="chat.pfp_url" class="chat-profile-pic"></Image>
+            </GridLayout>
+            <!-- username/last message -->
+            <GridLayout row="0" col="1" colSpan="3">
+              <Label textWrap="true" class="chat-text" ref="chatText">
+                <FormattedString>
+                  <Span
+                    :text="`${format(chat.username)} \n`"
+                    fontWeight="bold"
+                  ></Span>
+                  <Span :text="format(chat.last_message)"></Span>
+                </FormattedString>
+              </Label>
+            </GridLayout>
+            <!-- time last message received/sent -->
+            <GridLayout row="1" col="5">
+              <Label
+                :text="chat.message_time"
+                class="chat-time-passed"
+                textWrap="true"
+              ></Label>
+            </GridLayout>
+          </Gridlayout>
+          <!-- end chats with ender so chats don't fall behind bottom actionbar /-->
           <label height="180" class="chat-container" />
         </StackLayout>
       </ScrollView>
       <!-- load in actiobar top and bottom in absolute layout -->
-    <GridLayout rows="2*, 12*, *" height="100%" width="100%">
-      <ActionBarTop row="0"/>
-      <ActionBarBottom row="2"/>
-    </GridLayout>
-    <GridLayout columns="60, 410, 60" rows="50, 720, 60">
-        <Image src="~/Images/back_btn.png" row=0 col=0 marginTop=10 @tap="goHome"></Image>
-        <Image src="~/Images/add_btn.png" row=3 col=3></Image>
-    </GridLayout>
+      <GridLayout rows="2*, 12*, *" height="100%" width="100%">
+        <ActionBarTop row="0" />
+        <ActionBarBottom row="2" />
+      </GridLayout>
+      <GridLayout columns="60, 410, 60" rows="50, 720, 60">
+        <Image
+          src="~/Images/back_btn.png"
+          row="0"
+          col="0"
+          marginTop="10"
+          @tap="goHome"
+        ></Image>
+        <Image src="~/Images/add_btn.png" row="3" col="3"></Image>
+      </GridLayout>
     </AbsoluteLayout>
   </Page>
 </template>
@@ -64,7 +73,7 @@ import User from "@/Models/User";
 import ActionBarTop from "./ActionBars/ActionBarTop.vue";
 import ActionBarBottom from "./ActionBars/ActionBarBottom.vue";
 import Home from "./Home.vue";
-import ChatDisplay from "./ChatDisplay.vue"
+import ChatDisplay from "./ChatDisplay.vue";
 
 @Component({
   name: "Chats",
@@ -74,23 +83,23 @@ import ChatDisplay from "./ChatDisplay.vue"
     Home
   }
 })
-
-
 export default class Chats extends Vue {
   msg: string = "Chats";
   max_char: number = 30;
   // set max character size in string, and when it exceeds max_char it truncates it with ellipsis.
   format(txt: string) {
-    if (txt.length > this.max_char)
-        return `${txt.substr(0, this.max_char)}...`;
+    if (txt.length > this.max_char) return `${txt.substr(0, this.max_char)}...`;
     return txt;
-  }  
-  // function to go back to main screen
-  goHome(){
-    this.$showModal(Home, {fullscreen: true})
   }
-  goChat(receiver_id: String){
-    this.$showModal(ChatDisplay, {fullscreen: true, props: {receiver_id}})
+  // function to go back to main screen
+  goHome() {
+    this.$showModal(Home, { fullscreen: true });
+  }
+  goChat(args: TapGestureEventData, chat: Chat) {
+    this.$showModal(ChatDisplay, {
+      fullscreen: true,
+      props: { chat: chat }
+    });
   }
   // chats aanmaken voor template, later inladen via API
   chats = [
@@ -99,10 +108,11 @@ export default class Chats extends Vue {
       sender_id: "1",
       receiver_id: "2",
       username: "fkorrie",
-      pfp_url: "https://cdn.vox-cdn.com/thumbor/VVXayrypyYIMqiHWIYdL77FRF_o=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/22408516/Big_Chungus.png",
+      pfp_url:
+        "https://cdn.vox-cdn.com/thumbor/VVXayrypyYIMqiHWIYdL77FRF_o=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/22408516/Big_Chungus.png",
       last_message: "Over het laatste nieuws gesproken",
       message_time: "18:46",
-      messages:[
+      messages: [
         {
           type: 5,
           text: "Sup biggas!",
@@ -112,10 +122,10 @@ export default class Chats extends Vue {
         },
         {
           type: 5,
-          text: "Lorem ipsum.",
+          text: "Sup foo.",
           message_id: "2",
-          sender_id: "1",
-          receiver_id: "2"
+          sender_id: "2",
+          receiver_id: "1"
         },
         {
           type: 5,
@@ -131,17 +141,27 @@ export default class Chats extends Vue {
       sender_id: "3",
       receiver_id: "2",
       username: "Anonymous",
-      pfp_url: "https://stickermaster.nl/30784-large_default/anonymous-sticker.jpg",
-      last_message: "Ik weet waar je huis woont, maar je huis weet niet waar ik woon. Of wel soms?",
-      message_time: "Gisteren"
-
+      pfp_url:
+        "https://stickermaster.nl/30784-large_default/anonymous-sticker.jpg",
+      last_message:
+        "Ik weet waar je huis woont, maar je huis weet niet waar ik woon. Of wel soms?",
+      message_time: "Gisteren",
+      messages: [
+        {
+          type: 5,
+          text:
+            "Ik weet waar je huis woont, maar je huis weet niet waar ik woon. Of wel soms?",
+          message_id: "1",
+          sender_id: "3",
+          receiver_id: "2"
+        }
+      ]
     }
-  ]
+  ];
 }
 </script>
 
 <style lang="scss" scoped>
-
 .chat-container {
   border-top-width: 2px;
   border-color: #757575;
@@ -159,7 +179,7 @@ export default class Chats extends Vue {
   border-width: 1;
   border-color: #757575;
   object-fit: scale-down;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .chat-text {
@@ -174,5 +194,4 @@ export default class Chats extends Vue {
   font-style: italic;
   font-size: 18em;
 }
-
 </style>
