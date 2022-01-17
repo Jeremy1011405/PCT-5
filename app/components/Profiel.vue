@@ -11,14 +11,22 @@
     </GridLayout>
 
     <StackLayout width="95%" row="2" marginTop="-80">
-      <!--General Stuff in Stacklayout(Name, Email, Role)-->
+      <!--General Stuff in Stacklayout(Name, Email, Role etc.)-->
       <StackLayout class="profile-header">
 
         <!--Displays Username of user-->
         <Label>
           <FormattedString>
-            <Span text="Naam: " fontSize="20" fontWeight="bold"/>
+            <Span text="Gebruikersnaam: " fontSize="20" fontWeight="bold"/>
             <Span :text ="this.currentUser.username" fontSize="20"/>
+          </FormattedString>
+        </Label>
+
+        <!--Displays full name of user-->
+        <Label>
+          <FormattedString>
+            <Span text="Naam: " fontSize="20" fontWeight="bold"/>
+            <Span :text ="this.currentUser.name" fontSize="20"/>
           </FormattedString>
         </Label>
 
@@ -45,7 +53,7 @@
         <Label textWrap="true">
           <FormattedString>
             <Span text="Info: \n" fontSize="18" fontWeight="bold" marginLeft= "30"/>
-            <Span :text="this.currentUser.gebruikerinfo" fontSize="16"/>
+            <Span :text="this.currentUser.description" fontSize="16"/>
           </FormattedString>
         </Label>
       </StackLayout>
@@ -59,13 +67,10 @@
 
 <script lang="ts">
   //import from other files
-  import { Http, HttpResponse } from '@nativescript/core';
   import Vue from "nativescript-vue";
   import { Component, Prop } from "vue-property-decorator";
   import ActionBarTop from "./ActionBars/ActionBarTop.vue";
   import ActionBarBottom from "./ActionBars/ActionBarBottom.vue";
-  import UserProfile from "@/Models/UserProfile";
-  import * as AppSettings from '@nativescript/core/application-settings';
   import {WriteFile, ReadFile, ReadFileSync} from "@/Models/FileSystemFunctions";
   import newPerson from '~/Models/newPerson';
 
@@ -82,15 +87,15 @@
   export default class Profiel extends Vue {
     msg: string = "Profiel";
     str: string = "";
-    currentUser!: UserProfile;  
+    currentUser!: newPerson;  
     //The code that runs before the page is loaded
     beforeMount() 
     {
-    var FileContent = ReadFileSync("Models", "UserJSON.json");
+    var FileContent = ReadFileSync("Models", "CurrentUserJSON.json");
 
     let JSONFileContent = JSON.parse(FileContent);
     this.currentUser =  JSON.parse(FileContent);
-    console.log(`CurrentUser: this.currentUser`)
+    console.log(`Filecontent: ${FileContent}`)
     console.log(`FileContent CurrentUser: ${JSONFileContent}`)
     console.log("User loaded test")
     }
@@ -137,17 +142,17 @@
   //Top part of user info container
   .profile-header 
   {
-  background-color: rgb(255, 255, 255);
-  border-top-width: 5px;
-  border-left-width: 5px;
-  border-right-width: 5px;
-  border-top-right-radius: 10;
-  border-top-left-radius: 10;
-  label 
-    {
-    color: black;
-    }
-  padding: 10;
+    background-color: rgb(255, 255, 255);
+    border-top-width: 5px;
+    border-left-width: 5px;
+    border-right-width: 5px;
+    border-top-right-radius: 10;
+    border-top-left-radius: 10;
+    label 
+      {
+      color: black;
+      }
+    padding: 10;
   }
 
 //Bottom part of user info container

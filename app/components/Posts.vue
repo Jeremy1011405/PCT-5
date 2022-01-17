@@ -99,7 +99,6 @@ import Chats from "@/components/Chats.vue"
 import Profiel from "@/components/Profiel.vue"
 import User from "@/Models/User";
 import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
-import UserProfile from "~/Models/UserProfile";
 import * as AppSettings from '@nativescript/core/application-settings';
 
 // import { mapActions, mapGetters } from "vuex";
