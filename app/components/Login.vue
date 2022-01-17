@@ -29,8 +29,8 @@
   import { Component, Prop } from "vue-property-decorator";
   import "./Loginstyle.css";
   import * as AppSettings from '@nativescript/core/application-settings';
-  import UserProfile from "~/Models/UserProfile";
   import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
+  import newPerson from "~/Models/newPerson";
 
   @Component({ name: "Login", components: {}})
   
@@ -72,7 +72,7 @@
       let gebruikersnaam: TextField = (this.$refs.Naam as any).nativeView as TextField;
       let wachtwoord: TextField = (this.$refs.Wachtwoord as any).nativeView as TextField;
       let loggedin: boolean = false;
-      let ProfielStuff: UserProfile;
+      let ProfielStuff: newPerson;
       let blt = (this.$refs.badlog as any).nativeView;
       this.usersuitjason()
 
@@ -93,13 +93,13 @@
             AppSettings.setString("LoggedinID", this.users[index].ID);
 
             //User information to JSON string
-            ProfielStuff = new UserProfile(this.users[index].name, this.users[index].pfp_url, this.users[index].role, this.users[index].email, this.users[index].description);
+            ProfielStuff = new newPerson(this.users[index].username, this.users[index].pfp_url, this.users[index].name, this.users[index].email, this.users[index].password, this.users[index].description, this.users[index].role, this.users[index].ID);
             this.JSONString = `${JSON.stringify(ProfielStuff)}`;
             //JSON.parse(this.JSONString)
             console.log(this.JSONString);
             
-            WriteFile(this.JSONString, "Models", "UserJSON.json");
-            console.log(ReadFileSync("Models", "UserJSON.json"));
+            WriteFile(this.JSONString, "Models", "CurrentUserJSON.json");
+            console.log(ReadFileSync("Models", "CurrentUserJSON.json"));
           
             //back to Home
             this.$emit("onLogin");
