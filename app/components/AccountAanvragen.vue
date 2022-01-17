@@ -139,10 +139,10 @@
           AppSettings.setString("codething", codething);
           AppSettings.setBoolean("accountRequested", true);
           if (rand == 1){
-            AppSettings.setString("AccountAanvragenKey", random);
+            AppSettings.setString("AccountAanvragenKey", fakerandom);
           }
           else{
-            AppSettings.setString("AccountAanvragenKey", fakerandom);
+            AppSettings.setString("AccountAanvragenKey", random);
           }
           this.accountGelukt(args);
         }

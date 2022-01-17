@@ -43,13 +43,13 @@
       try{
         if (FileExist("Models", "UsersListJSON.json") == true){
           var FileContent = ReadFileSync("Models", "UsersListJSON.json");
-          var JSONFileContent = JSON.parse(FileContent);
-          var post;
-          for (post in JSONFileContent){
-            this.users.push(JSONFileContent[post]);
+          var JSONFileUsers = JSON.parse(FileContent);
+          var user;
+          for (user in JSONFileUsers){
+            this.users.push(JSONFileUsers[user]);
             console.log(this.users)
           }
-          console.log("Test: " + JSONFileContent)
+          console.log("Test: " + JSONFileUsers)
         }
       }
       catch (error)
