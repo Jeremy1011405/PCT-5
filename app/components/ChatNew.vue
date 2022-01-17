@@ -100,9 +100,36 @@ export default class ChatNew extends Vue {
                 tempURL = "https://i.pinimg.com/236x/34/6e/1d/346e1df0044fd77dfb6f65cc086b2d5e.jpg"
             }
 
+            var d = new Date();
+            let uur: string = "";
+            let minuten: string = "";
+            let dag: string = "";
+            let maand: string = "";
+
+            if(d.getHours() < 10){
+            uur = `0${d.getHours()}`
+            }
+            else{uur = `${d.getHours()}`}
+
+            if(d.getMinutes() < 10){
+            minuten = `0${d.getMinutes()}`
+            }
+            else{minuten = `${d.getMinutes()}`}        
+
+            if(d.getDate() < 10){
+            dag = `0${d.getDate()}`
+            }
+            else{dag = `${d.getDate()}`}
+
+            if((d.getMonth() + 1) < 10){
+            maand = `0${(d.getMonth() + 1)}`
+            }
+            else{maand = `${(d.getMonth() + 1)}`}        
+
+            let tijd: string = `${uur}:${minuten} ${dag}-${maand}-${d.getFullYear()}`
             let tempIDChat = `${this.getRandomInt(99999999)}`
             let newMessage = new Message(`${this.getRandomInt(99999999)}`, 5, null, null, txt, AppSettings.getString("LoggedinID"), tempID)
-            let newchat = new Chat(tempIDChat, AppSettings.getString("LoggedinID"), tempID, name, tempURL, [newMessage], txt, "nu")
+            let newchat = new Chat(tempIDChat, AppSettings.getString("LoggedinID"), tempID, name, tempURL, [newMessage], txt, tijd)
             let ChatsArray : Array<any>;
             //Chat information to JSON string
             this.PushChat = newchat;

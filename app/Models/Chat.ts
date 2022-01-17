@@ -8,9 +8,9 @@ export default class Chat{
     pfp_url: String;
     messages: Message[];
     last_message: String;
-    message_time: String;
+    message_time: string;
 
-    constructor(chat_id: string, sender_id: string, receiver_id: string, username: String, pfp_url: String, messages: Message[], last_message: String, message_time: String){
+    constructor(chat_id: string, sender_id: string, receiver_id: string, username: String, pfp_url: String, messages: Message[], last_message: String, message_time: string){
         this.chat_id = chat_id;
         this.sender_id = sender_id;
         this.receiver_id = receiver_id;
