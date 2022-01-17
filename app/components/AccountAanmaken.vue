@@ -1,17 +1,19 @@
 <template>
 <AbsoluteLayout>
   <GridLayout rows="4*, 1*, 8*" height="100%" width="100%">
-    <Label ref="Gelukttext" marginTop="30" class="accounttext" text="Gelukt!" fontSize=35em></Label>
     <Label ref="accaantextref" marginTop="30" class="accaantext" text="Account Aanmaken" fontSize=25em></Label>
-    <Label marginTop="85" class="verplicht" ref="badlog2" text="De invulvakken met een ster '*' zijn verplicht"></Label>
-    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="140" ref="Voornaam" hint="Voornaam *"></TextField>
-    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="230" ref="Achternaam" hint="Achternaam *"></TextField>
-    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="320" ref="Emailadres" hint="E-mailadres *"></TextField>
-    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="410" ref="Bedrijfsnaam" hint="Student, sponsor, etc. *"></TextField>
-    <Button class="accaanbutton" marginTop="560" text="Account Aanmaken" @tap="onLinkTap"></Button>
-  </GridLayout>
-  <GridLayout>
-  <Label ref="accanngetext1" marginTop="9999999" class="accanngetext" text="U kunt nu door naar het inlogscherm" fontSize=15em></Label>
+    <Label marginTop="70" class="verplicht" ref="badlog2" text="De invulvakken met een ster '*' zijn verplicht"></Label>
+    <Label marginTop="70" class="verkeerdecode" ref="verkeerdcode" text="De ingevulde code is onjuist."></Label>
+    <Label marginTop="70" class="gebruikt" ref="algebruikt" text="De ingevulde gegevens worden al gebruikt."></Label>
+    <Label marginTop="70" class="accountaangemaaktgelukt" ref="geluktt" text="Gelukt! Uw account is aangemaakt. U kunt nu door naar het inlogscherm!"></Label>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="90" ref="Toegangscode" hint="Toegangscode *"></TextField>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="170" ref="Username" hint="Gebruikersnaam *"></TextField>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="250" ref="Fullname" hint="Uw volledige naam *"></TextField>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="330" ref="Emailadres" hint="E-mailadres *"></TextField>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="410" secure="true" ref="Wachtwoord" hint="Wachtwoord *"></TextField>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="490" ref="ProfielfotoURL" hint="Profielfoto link (URL)"></TextField>
+    <TextField autocapitalizationType="none" class="nom2" height="7%" marginTop="570" ref="Profielbeschrijving" hint="Profielbeschrijving"></TextField>
+    <Button class="accaanbutton" marginTop="710" text="Account Aanmaken" @tap="onLinkTap"></Button>
   </GridLayout>
 </AbsoluteLayout>
 </template>
@@ -22,59 +24,148 @@
   import { Component, Prop } from "vue-property-decorator";
   import "./Loginstyle.css";
   import * as AppSettings from '@nativescript/core/application-settings';
+  import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
   var clipboard = require("nativescript-clipboard");
 
   @Component({ name: "AccountAanvragen", components: {}})
   
   export default class AccountAanmaken extends Vue {
     msg: string = "AccountAanvragen";
+    public JSONString = "";
+    users: Array<any> = [];
 
-    accountGelukt(args: TapGestureEventData){
-      let aat = (this.$refs.accaantextref as any).nativeView;
-      let button: Button = args.object as Button;
-      let voornaam: TextField = (this.$refs.Voornaam as any).nativeView as TextField;
-      let achternaam: TextField = (this.$refs.Achternaam as any).nativeView as TextField;
-      let emailadres: TextField = (this.$refs.Emailadres as any).nativeView as TextField;
-      let bedrijfsnaam: TextField = (this.$refs.Bedrijfsnaam as any).nativeView as TextField;
-      let blt = (this.$refs.badlog2 as any).nativeView;
-      let gelukt = (this.$refs.Gelukttext as any).nativeView;
-      let acantx1 = (this.$refs.accanngetext1 as any).nativeView;
-      let acantx2 = (this.$refs.accanngetext2 as any).nativeView;
-      let acantx3 = (this.$refs.accanngetext3 as any).nativeView;
-      let acantx4 = (this.$refs.accanngetext4 as any).nativeView;
-      let acantx5 = (this.$refs.accanngetext5 as any).nativeView;
-      let acantx6 = (this.$refs.accanngetext6 as any).nativeView;
-      let acantx7 = (this.$refs.accanngetext7 as any).nativeView;
-
-      // account aanvragen scherm verdwijnt lol
-      button.marginTop = 9999999;
-      voornaam.marginTop = 9999999;
-      achternaam.marginTop = 9999999;
-      emailadres.marginTop = 9999999;
-      bedrijfsnaam.marginTop = 9999999;
-      blt.marginTop = 9999999;
-      aat.marginTop = 9999999;
-      button.opacity = 0;
-      voornaam.opacity = 0;
-      achternaam.opacity = 0;
-      emailadres.opacity = 0;
-      bedrijfsnaam.opacity = 0;
-      blt.opacity = 0;
-      aat.opacity = 0;
-
-      // Account aangevraagd scherm verschijnt lol
-      gelukt.className = "gelukttext";
-      acantx1.marginTop = 100;
-      acantx2.marginTop = 125;
-      acantx3.marginTop = 150;
-      acantx4.marginTop = 175;
-      acantx5.marginTop = 200;
-      acantx6.marginTop = 225;
-      acantx7.marginTop = 250;
+    usersuitjason(){
+      try{
+        if (FileExist("Models", "UsersListJSON.json") == true){
+          var FileContent = ReadFileSync("Models", "UsersListJSON.json");
+          var JSONFileUsers = JSON.parse(FileContent);
+          var user;
+          for (user in JSONFileUsers){
+            this.users.push(JSONFileUsers[user]);
+            console.log(this.users)
+          }
+          console.log("Test: " + JSONFileUsers)
+        }
+      }
+      catch (error)
+      { 
+        console.log(error)
+      }
     }
     
     onLinkTap(args: TapGestureEventData) {
+      let Toegangscode: TextField = (this.$refs.Toegangscode as any).nativeView as TextField;
+      let Username: TextField = (this.$refs.Username as any).nativeView as TextField;
+      let Fullname: TextField = (this.$refs.Fullname as any).nativeView as TextField;
+      let Emailadres: TextField = (this.$refs.Emailadres as any).nativeView as TextField;
+      let Wachtwoord: TextField = (this.$refs.Wachtwoord as any).nativeView as TextField;
+      let ProfielfotoURL: TextField = (this.$refs.ProfielfotoURL as any).nativeView as TextField;
+      let Profielbeschrijving: TextField = (this.$refs.Profielbeschrijving as any).nativeView as TextField;
+      let blt = (this.$refs.badlog2 as any).nativeView;
+      let gebrukt = (this.$refs.algebruikt as any).nativeView;
+      let verkeerdecod = (this.$refs.verkeerdcode as any).nativeView;
+      let geluk = (this.$refs.geluktt as any).nativeView;
+      let thecode = "";
+      let oneused = false;
+
+      blt.className = "verplicht";
+      verkeerdecod.className = "verkeerdecode";
+      gebrukt.className = "gebruikt";
+      geluk.className = "accountaangemaaktgelukt";
+
+      if (AppSettings.getBoolean("accountRequested") == true){
+        thecode = AppSettings.getString("AccountAanvragenKey");
+      }
       
+      // checkt of de texfields leeg zijn of niet
+      if (Toegangscode.text != ""){
+        Toegangscode.className = "nom2";
+      }
+      if (Toegangscode.text == ""){
+        Toegangscode.className = "WrongG2";
+        blt.className = "badlogin3";
+      }
+      if (Username.text != ""){
+        Username.className = "nom2";
+      }
+      if (Username.text == ""){
+        Username.className = "WrongG2";
+        blt.className = "badlogin3";
+      }
+      if (Fullname.text != ""){
+        Fullname.className = "nom2";
+      }
+      if (Fullname.text == ""){
+        Fullname.className = "WrongG2";
+        blt.className = "badlogin3";
+      }
+      if (Emailadres.text != ""){
+        Emailadres.className = "nom2";
+      }
+      if (Emailadres.text == ""){
+        Emailadres.className = "WrongG2";
+        blt.className = "badlogin3";
+      }
+      if (Wachtwoord.text != ""){
+        Wachtwoord.className = "nom2";
+      }
+      if (Wachtwoord.text == ""){
+        Wachtwoord.className = "WrongG2";
+        blt.className = "badlogin3";
+      }
+
+      if (Toegangscode.text != "" && Username.text != "" && Fullname.text != "" && Emailadres.text != "" && Wachtwoord.text != ""){
+        if (Toegangscode.text == thecode){
+          this.usersuitjason();
+          oneused = false;
+          for (var index in this.users){
+            if (this.users[index].username.toLowerCase() == Username.text.toLowerCase()){ gebrukt.className = "algebruikt1"; Username.className = "WrongA"; oneused = true; }
+            if (this.users[index].email.toLowerCase() == Emailadres.text.toLowerCase()){ gebrukt.className = "algebruikt1"; Emailadres.className = "WrongA"; oneused = true; }
+          }
+          if (oneused == false){
+            let url = ProfielfotoURL.text;
+            if (ProfielfotoURL.text == ""){
+              url = "https://i.pinimg.com/236x/34/6e/1d/346e1df0044fd77dfb6f65cc086b2d5e.jpg";
+            }
+
+            let descript = Profielbeschrijving.text;
+            if(Profielbeschrijving.text == ""){
+              descript = "Leeg";
+            }
+
+            geluk.className = "accaangelukt";
+            var JSONuserlist = JSON.parse(ReadFileSync("Models", "UsersListJSON.json"));
+            JSONuserlist.push({
+              username: Username.text,
+              pfp_url: url,
+              name: Fullname.text,
+              email: Emailadres.text,
+              password: Wachtwoord.text,
+              description: descript,
+              role: "Student",
+              ID: `U${this.users.length + 1}`
+            })
+            this.JSONString = JSON.stringify(JSONuserlist);
+            WriteFile(this.JSONString, "Models", "UsersListJSON.json");
+            Toegangscode.text = "";
+            Username.text = "";
+            Fullname.text = "";
+            Emailadres.text = "";
+            Wachtwoord.text = "";
+            ProfielfotoURL.text = "";
+            Profielbeschrijving.text = "";
+            AppSettings.remove("accountRequested");
+            AppSettings.remove("codething");
+            AppSettings.remove("AccountAanvragenKey");
+            AppSettings.setBoolean("accountRequested", false);
+          }
+
+        }
+        else{
+          verkeerdecod.className = "verkeerdecode2";
+          Toegangscode.className = "WrongG2";
+        }
       }
     }
+  }
 </script>

@@ -54,12 +54,12 @@ if (!AppSettings.hasKey("accountRequested")){
 if (FileExist("Models", "UsersListJSON.json") != true){
   try{
     let JSONString = "";
-    let users = [new newPerson("user1",
+    let users = [new newPerson("Rickert",
         "https://yt3.ggpht.com/OHpZx8wQoQZiu45LMfcSKvDBO6gfR5_1ro_ZbS3xVpcRIu4Zqy_uHoWKpEdxTUD_Spq6zck0=s900-c-k-c0x00ffffff-no-rj",
         "Rick Slingerland", "kotorem.sama@gmail.com", "password1", "useless thing here", "Student", "U1"),
-        new newPerson("user2", "https://i.pinimg.com/originals/d1/1e/20/d11e20d44501e1a59439b5344e07f5d7.jpg",
+        new newPerson("Jeremy123", "https://i.pinimg.com/originals/d1/1e/20/d11e20d44501e1a59439b5344e07f5d7.jpg",
         "Jeremy Jonker", "test.studenten@gmail.com", "password2", "This can not continue", "Student", "U2"),
-        new newPerson("user3", "https://pbs.twimg.com/profile_images/1297284021555208198/tlWsDTtw_400x400.jpg",
+        new newPerson("Higher", "https://pbs.twimg.com/profile_images/1297284021555208198/tlWsDTtw_400x400.jpg",
         "Hajar Akkouh", "1002381@gmail.com", "password3", "Too bad it's how it is.", "Student", "U3")];
     JSONString = `${JSON.stringify(users)}`;
     console.log(JSONString);

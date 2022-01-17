@@ -48,7 +48,7 @@
 .accaanbutton{
     color:rgb(255, 255, 255);
     border-radius: 10%;
-    background-color: rgb(57, 55, 121);
+    background-color: rgb(84, 93, 162);
     font-family: Arial;
     font-size: 30%;
     font-weight:bold;
@@ -59,14 +59,35 @@
 
 .accaanbutton:active{
     color:white;
-    background-color: rgb(21, 18, 110);
+    background-color: rgb(48, 56, 151);
     box-shadow: 6px 6px 6px rgba(0,0,0,200);
 }
 
 .verplicht{
     margin-top:20;
     color:rgb(0, 0, 0);
-    opacity:1;
+    opacity:0;
+    text-align: center;
+}
+
+.gebruikt{
+    margin-top:20;
+    color:rgb(0, 0, 0);
+    opacity:0;
+    text-align: center;
+}
+
+.accountaangemaaktgelukt{
+    margin-top:20;
+    color:rgb(0, 0, 0);
+    opacity:0;
+    text-align: center;
+}
+
+.verkeerdecode{
+    margin-top:20;
+    color:rgb(0, 0, 0);
+    opacity:0;
     text-align: center;
 }
 
@@ -88,6 +109,17 @@
     height: 12%;
 }
 
+.WrongA:focus{
+    border-color:rgb(133, 198, 229);
+    height: 12%;
+}
+
+.WrongA{
+    border-color:rgb(255, 153, 0);
+    border-bottom-width: 1cm;
+    height: 12%;
+}
+
 .badlogin2{
     opacity:1;
     color:rgb(255, 0, 0);
@@ -97,6 +129,24 @@
 .badlogin3{
     opacity:1;
     color:rgb(255, 0, 0);
+    text-align: center;
+}
+
+.verkeerdecode2{
+    opacity:1;
+    color:rgb(255, 0, 0);
+    text-align: center;
+}
+
+.algebruikt1{
+    opacity:1;
+    color:rgb(255, 153, 0);
+    text-align: center;
+}
+
+.accaangelukt{
+    opacity:1;
+    color:rgb(0, 216, 11);
     text-align: center;
 }
 
