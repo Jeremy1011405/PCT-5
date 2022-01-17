@@ -181,10 +181,37 @@ export default class Posts extends Vue {
   goToChats(){
     try {
       if (FileExist("Models", "ChatsJSON.json") != true){
+        var d = new Date();
+        let uur: string = "";
+        let minuten: string = "";
+        let dag: string = "";
+        let maand: string = "";
+
+        if(d.getHours() < 10){
+          uur = `0${d.getHours()}`
+        }
+        else{uur = `${d.getHours()}`}
+
+        if(d.getMinutes() < 10){
+          minuten = `0${d.getMinutes()}`
+        }
+        else{minuten = `${d.getMinutes()}`}        
+
+        if(d.getDate() < 10){
+          dag = `0${d.getDate()}`
+        }
+        else{dag = `${d.getDate()}`}
+
+        if((d.getMonth() + 1) < 10){
+          maand = `0${(d.getMonth() + 1)}`
+        }
+        else{maand = `${(d.getMonth() + 1)}`}        
+
+        let tijd: string = `${uur}:${minuten} ${dag}-${maand}-${d.getFullYear()}`
         let newMessage1 = new Message("FirstMessage1", 5, null, null, "Welkom bij de team Phidippides app!", AppSettings.getString("LoggedinID"), "ChatBot")
         let newMessage2 = new Message("FirstMessage2", 5, null, null, "Heb je vragen of opmerkingen?", AppSettings.getString("LoggedinID"), "ChatBot")
         let newMessage3 = new Message("FirstMessage3", 5, null, null, "Neem dan contact op met de beheerder.", AppSettings.getString("LoggedinID"), "ChatBot")
-        let newchat = new Chat("FirstChat", "ChatBot", AppSettings.getString("LoggedinID"), "Team Phidippides", "https://i.ibb.co/Wf0TJj3/ic-launcher.png", [newMessage1, newMessage2, newMessage3], "Welkom bij de team Phidippides app! \n heb je vragen of opmerkingen? \n Neem dan contact op met de berheerder.", "nu")
+        let newchat = new Chat("FirstChat", "ChatBot", AppSettings.getString("LoggedinID"), "Team Phidippides", "https://i.ibb.co/Wf0TJj3/ic-launcher.png", [newMessage1, newMessage2, newMessage3], "Welkom bij de team Phidippides app! \n heb je vragen of opmerkingen? \n Neem dan contact op met de berheerder.", tijd)
         let ChatsArray: Array<any> = ["FirstChat.json"];
         this.JSONString = JSON.stringify(newchat)
         this.JSONStringFile = JSON.stringify(ChatsArray)
