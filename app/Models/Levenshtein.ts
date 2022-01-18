@@ -1,4 +1,5 @@
 export function Levenshtein(a: string, b: string): number
+//This function returns a number that tells you how different two strings are.
 {
 	const an = a ? a.length : 0;
 	const bn = b ? b.length : 0;

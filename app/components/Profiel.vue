@@ -91,10 +91,12 @@
     //The code that runs before the page is loaded
     beforeMount() 
     {
+    //Take user from JSON file
     var FileContent = ReadFileSync("Models", "CurrentUserJSON.json");
-
-    let JSONFileContent = JSON.parse(FileContent);
     this.currentUser =  JSON.parse(FileContent);
+
+    //Debugging in terminal:
+    let JSONFileContent = JSON.parse(FileContent);
     console.log(`Filecontent: ${FileContent}`)
     console.log(`FileContent CurrentUser: ${JSONFileContent}`)
     console.log("User loaded test")
