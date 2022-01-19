@@ -1,8 +1,8 @@
 <template>
   <Page actionBarHidden="true">
-    <!-- absolute layout for custom actiobar -->
+    <!-- absolute layout for custom actionbar -->
     <AbsoluteLayout>
-      <ScrollView width="100%" height="100%" marginTop="6%" ref="scrollView"> 
+      <ScrollView width="100%" height="100%" marginTop="6%" ref="scrollView" class="backgroundChats"> 
         <StackLayout>
           <Label height="20"/>
           <GridLayout v-for="msg in chat.messages" :key="msg.message_id">
@@ -22,6 +22,10 @@
       </ScrollView>
       <GridLayout rows="2*, 12*, *" height="100%" width="100%">
         <ActionBarTop row="0" />
+      </GridLayout>
+      <GridLayout rows="1*, 12*, *" columns="4*, 3*, 12*, 4*" height="100%" width="100%">
+        <Image row="0" column="1" :src="chat.pfp_url" class="chat-profile-pic"/>
+        <Label row="0" column="2" :text="chat.username" verticalAlignment="center" fontWeight="bold" color="white" class="font-size"/>
       </GridLayout>
       <GridLayout rows="16*, 104*, 10*, 1*" columns="16*, 2*, 2, 2" height="100%" width="100%">
         <TextField row="2" width="82.5%" class="message-textfield" ref="Message" hint="Bericht" horizontalAlignment="left" returnKeyType="send" @returnPress="sendMsg($event)"></TextField>
@@ -110,6 +114,43 @@ export default class ChatDisplay extends Vue {
         sender_id: this.chat.sender_id,
         receiver_id: this.chat.receiver_id
       })
+
+      //set last message for chats JSON
+      JSONChat.last_message = `${txt}`;
+      //set last message for chats direct display
+      this.chat.last_message = `${txt}`;
+      var d = new Date();
+      let uur: string = "";
+      let minuten: string = "";
+      let dag: string = "";
+      let maand: string = "";
+      //time for last message chats
+      if(d.getHours() < 10){
+      uur = `0${d.getHours()}`
+      }
+      else{uur = `${d.getHours()}`}
+
+      if(d.getMinutes() < 10){
+      minuten = `0${d.getMinutes()}`
+      }
+      else{minuten = `${d.getMinutes()}`}        
+
+      if(d.getDate() < 10){
+      dag = `0${d.getDate()}`
+      }
+      else{dag = `${d.getDate()}`}
+
+      if((d.getMonth() + 1) < 10){
+      maand = `0${(d.getMonth() + 1)}`
+      }
+      else{maand = `${(d.getMonth() + 1)}`}        
+
+      let tijd: string = `${uur}:${minuten} ${dag}-${maand}-${d.getFullYear()}`
+      //for JSON
+      JSONChat.message_time = `${tijd}`;
+      //for direct display
+      this.chat.message_time = `${tijd}`;
+
       this.JSONString = JSON.stringify(JSONChat)
       WriteFile(this.JSONString, "Models", `${this.chat.chat_id}.json`);
 
@@ -117,10 +158,6 @@ export default class ChatDisplay extends Vue {
     }
     rawtxt.dismissSoftInput();
   }
-  // Scrolldown(data: EventData) {
-  // let scrollView: ScrollView = (this.$refs.scrollView as any) as ScrollView
-  // scrollView.scrollToVerticalOffset(scrollView.scrollableHeight, false)
-  // }
 }
 </script>
 
@@ -155,5 +192,20 @@ export default class ChatDisplay extends Vue {
 }
 .left {
   background-color: #615a5c;
+}
+.backgroundChats {
+  background-color: rgb(239, 239, 239);
+}
+.chat-profile-pic {
+  width: 40;
+  height: 40;
+  border-radius: 90;
+  border-width: 1;
+  border-color: #757575;
+  object-fit: scale-down;
+  background-color: #ffffff;
+}
+.font-size {
+  font-size: 18;
 }
 </style>

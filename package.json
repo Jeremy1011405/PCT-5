@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "@nativescript/core": "~8.1.1",
+    "@nativescript/imagepicker": "^1.0.6",
     "@nativescript/theme": "~3.0.1",
     "@types/nodemailer": "^6.4.4",
     "nativescript-clipboard": "^2.1.1",

@@ -3,7 +3,7 @@
     <!-- absolute layout for custom actionbar -->
     <AbsoluteLayout>
       <!-- scroll for big amount of chats -->
-      <ScrollView width="100%" height="100%" marginBottom="10%">
+      <ScrollView width="100%" height="100%" marginBottom="10%" class="backgroundChats">
         <!-- start stacklayout with starter so chats don't fall behind actionbar -->
         <StackLayout> 
           <!-- create a frontend for every chat -->
@@ -12,7 +12,7 @@
             v-for="chat in this.chats"
             :key="chat.chat_id"
             columns="3*, 2*, 4*, 4*, 2*"
-            class="chat-container"
+            class="chat-container chatLabel"
             @tap="goChat($event, chat)"
           >
             <!-- profile picture -->
@@ -34,7 +34,7 @@
             <!-- time last message received/sent -->
             <GridLayout row="1" col="5">
               <Label
-                :text="chat.message_time"
+                :text="getTimeStamp(chat.message_time)"
                 class="chat-time-passed"
                 textWrap="true"
               ></Label>
@@ -136,6 +136,27 @@ export default class Chats extends Vue {
        this.chats.push(JSON.parse(ReadFileSync("Models", `${FileContentChats[file]}`)))
      }
    }
+   getTimeStamp(date: string){
+     var nu = new Date();
+
+     var dag: number = +(date[6] + date[7])
+     var maand: number = +(date[9] + date[10])
+     var jaar: number = +(date[12] + date[13] + date[14] + date[15])
+
+      console.log("gister? " + (dag == (nu.getDate() + 1) && (maand == nu.getMonth() + 1) && jaar == nu.getFullYear()))
+      if((dag == (nu.getDate() + 1) && (maand == nu.getMonth() + 1) && jaar == nu.getFullYear())){
+        return "Gisteren"
+      }
+
+      console.log("dag? " + (dag > nu.getDate() && (maand >= nu.getMonth() + 1) && jaar >= nu.getFullYear()))
+      console.log("maand? " + (maand > (nu.getMonth() + 1) && jaar >= nu.getFullYear()))
+      console.log("jaar?" + (jaar > nu.getFullYear()))
+      if( (dag > nu.getDate() && (maand >= nu.getMonth() + 1) && jaar >= nu.getFullYear()) || (maand > (nu.getMonth() + 1) && jaar >= nu.getFullYear()) || jaar > nu.getFullYear()){
+       return (date[6] + date[7] + date[8] + date[9] + date[10] + date[11] + date[12] + date[13] + date[14] + date[15])
+      }
+
+      else{return (date[0] + date[1] + date[2] + date[3] + date[4])}
+   }
 }
 </script>
 
@@ -146,7 +167,7 @@ export default class Chats extends Vue {
   //background-color: #FFFFFF; // slightlylighter
   //background-color: rgb(102, 101, 101); // og
   //background-color: rgb(61, 60, 60); // instagram
-  margin-bottom: 5;
+  // margin-bottom: 5;
   padding: 10;
 }
 .chat-profile-pic {
@@ -168,5 +189,11 @@ export default class Chats extends Vue {
   color: black;
   font-style: italic;
   font-size: 14em;
+}
+.backgroundChats {
+  background-color: rgb(239, 239, 239);
+}
+.chatLabel {
+    background-color: white;
 }
 </style>
