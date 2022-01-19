@@ -99,8 +99,9 @@ import {
 } from "@nativescript/core";
 
 import { Screen } from "@nativescript/core/platform";
-
-import User from "@/Models/User";
+import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
+import newPerson from "@/Models/newPerson";
+import Comment from "@/Models/Comment";
 import * as AppSettings from '@nativescript/core/application-settings';
 
 @Component({
@@ -109,40 +110,20 @@ import * as AppSettings from '@nativescript/core/application-settings';
 })
 export default class Comments extends Vue {
   @Prop() comment!: any;
-  user!: User;
+  user!: newPerson;
   liked: Number[] = [];
   opened: String[] = [];
-
-  fakeUsers: User[] = [
-    new User(
-      "TeamPhidippides",
-      "https://scontent-ams4-1.cdninstagram.com/v/t51.2885-19/s320x320/84434528_171860137571179_2936525756534095872_n.jpg?_nc_ht=scontent-ams4-1.cdninstagram.com&_nc_ohc=k7E9Glt4BnoAX_ZX7lb&edm=ABfd0MgBAAAA&ccb=7-4&oh=4eb8752178b1805110e848b04783e343&oe=616D2C4E&_nc_sid=7bff83"
-    ),
-    new User("Keesje", "https://randomuser.me/api/portraits/thumb/men/75.jpg"),
-    new User(
-      "Klaas",
-      "https://cdn.drawception.com/images/avatars/647493-B9E.png"
-    ),
-    new User(
-      "xXxSniper420xXx",
-      "https://i.pinimg.com/474x/df/72/d5/df72d51685e99a265ad186bada408e27.jpg"
-    ),
-    new User(
-      "fkorrie",
-      "https://cdn.vox-cdn.com/thumbor/VVXayrypyYIMqiHWIYdL77FRF_o=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/22408516/Big_Chungus.png"
-    ),
-    new User(
-      "Sponsor123",
-      "https://cdn.vox-cdn.com/thumbor/VVXayrypyYIMqiHWIYdL77FRF_o=/1400x1400/filters:format(png)/cdn.vox-cdn.com/uploads/chorus_asset/file/22408516/Big_Chungus.png"
-    ),
-    new User(
-      "Rick Slingerland",
-      "https://yt3.ggpht.com/OHpZx8wQoQZiu45LMfcSKvDBO6gfR5_1ro_ZbS3xVpcRIu4Zqy_uHoWKpEdxTUD_Spq6zck0=s900-c-k-c0x00ffffff-no-rj"
-    ),
-    new User(AppSettings.getString("LoggedinName"), AppSettings.getString("LoggedinPFPUrl"))
-  ];
+  users!: Array<any>;
 
   beforeMount() {
+    var user;
+    var FileContentUser = JSON.parse(ReadFileSync("Models", "UsersListJSON.json"))
+    console.log(FileContentUser)
+    for (user in FileContentUser) {
+      console.log(user)
+      console.log(`${FileContentUser[user]}`)
+      this.users.push(`${FileContentUser[user]}`)
+    }
     this.user = this.getUser(this.comment.username);
   }
 
@@ -204,11 +185,17 @@ export default class Comments extends Vue {
   }
 
   getUser(username: String) {
-    let found = this.fakeUsers.find((u: User) => u.username == username);
+    let found = this.users.find((u: newPerson) => u.username == username);
     if (found == undefined) {
-      return new User(
+      return new newPerson(
         "Anonymous",
-        "https://stickermaster.nl/30784-large_default/anonymous-sticker.jpg"
+        "https://stickermaster.nl/30784-large_default/anonymous-sticker.jpg", 
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
       );
     }
     return found;

@@ -92,7 +92,7 @@ export default class Home extends Vue {
   beforeMount(){
     try {
         if (FileExist("Models", "PostJSON.json") != true){
-          let basicPost = new Post("0", 2, "Hajar Akkouh" ,"~/Images/welcome.png" , "Welkom bij de Team Phidippides Chat App!", [])
+          let basicPost = new Post("0", 2, "Hajar Akkouh" ,"~/Images/welcome.png" , "Welkom bij de Team Phidippides Chat App!",[],[])
           let postArray: Array<Post> = [basicPost];      
           let postString: string = JSON.stringify(postArray)
           WriteFile(postString, "Models", "PostJSON.json");

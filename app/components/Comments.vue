@@ -75,13 +75,11 @@
 import Vue from "nativescript-vue";
 import { Component, Prop } from "vue-property-decorator";
 import { GridLayout, TapGestureEventData } from "@nativescript/core";
-
 import { Screen } from "@nativescript/core/platform";
-
 import Post from "@/Models/Post";
 import Comment from "@/components/Comment.vue";
-
-import User from "@/Models/User";
+import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
+import newPerson from "@/Models/newPerson";
 import * as AppSettings from '@nativescript/core/application-settings';
 
 @Component({
@@ -92,14 +90,11 @@ export default class Comments extends Vue {
   @Prop() post!: Post;
   liked: Number[] = [];
   opened: String[] = [];
-
   keyboardOpen: Boolean = false;
-
-  currentUser!: User;
-
+  currentUser!: newPerson;
   replyText: String = "";
-
   replyTarget: any = null;
+  users!: Array<any>;
 
   get canReply() {
     let test1 = this.replyText.length > 0 && this.replyText != " ";
@@ -109,7 +104,25 @@ export default class Comments extends Vue {
   }
 
   beforeMount() {
-    this.currentUser = new User(AppSettings.getString("LoggedinName"), AppSettings.getString("LoggedinPFPUrl")); 
+    var user;
+    var FileContentUser = JSON.parse(ReadFileSync("Models", "UsersListJSON.json"))
+    console.log(FileContentUser)
+    for (user in FileContentUser) {
+      console.log(user)
+      console.log(`${FileContentUser[user]}`)
+      this.users.push(`${FileContentUser[user]}`)
+    }
+    
+    this.currentUser = new newPerson(
+      AppSettings.getString("LoggedinUsername"), 
+      AppSettings.getString("LoggedinPFPUrl"),
+      AppSettings.getString("LoggedinName"),
+      AppSettings.getString("LoggedinEmail"),
+      AppSettings.getString("LoggedinPassword"),
+      AppSettings.getString("LoggedinDescription"),
+      AppSettings.getString("LoggedinRole"),
+      AppSettings.getString("LoggedinID")
+    );   
   }
 
   sh() {
