@@ -6,6 +6,7 @@
       height="100%"
       width="100%"
     >
+    <!-- Image from phone textfield: done with a plugin -->
       <TextField
         row="1"
         class="textfield"
@@ -15,6 +16,7 @@
         hint="Plak hier uw foto"
         @tap="openImagePicker"
       ></TextField>
+      <!-- Textfield for the post.footer -->
       <TextField
         row="0"
         class="textfield"
@@ -24,6 +26,7 @@
         returnKeyType="done"
         @textChange="onTxtChange"
       ></TextField>
+      <!-- Button which initiates the code to write to the json -->
       <Button
         row="2"
         class="toevoegenbutton"
@@ -88,12 +91,13 @@ export default class AddPost extends Vue {
   @Prop() onAddPost: any;
   defaultComment!: Comment;
 
+  // check for the "toevoegen" button so I never get an empty footer or non-existent image
   get isValid() {
     return this.newPost.image != "" && this.newPost.footer != "";
   }
 
   beforeMount() {
-    // Hier lees ik de Post.jason voor de posts :)
+    // here I read the jason for the posts 
     try {
       if (FileExist("Models", "PostJSON.json") == true) {
         var FileContent = ReadFileSync("Models", "PostJSON.json");
@@ -142,13 +146,13 @@ export default class AddPost extends Vue {
       });
   }
 
+  // ugly code stolen from teammate for accurate timing on a post.comment
   timeStampForComment(): String {
     var d = new Date();
     let uur: string = "";
     let minuten: string = "";
     let dag: string = "";
     let maand: string = "";
-    // sorry dat ik je code steel victor ik ging dit sws ook implementeren voor comments
     if (d.getHours() < 10) {
       uur = `0${d.getHours()}`;
     } else {
@@ -177,7 +181,6 @@ export default class AddPost extends Vue {
   }
 
   writeJSON(args: TapGestureEventData) {
-    // Haal de beschrijving (footer)
     let beschrijving: TextField = (this.$refs.Beschrijving as any)
       .nativeView as TextField;
     this.newPost.footer = beschrijving.text;
@@ -197,9 +200,9 @@ export default class AddPost extends Vue {
     this.newPost.comments.push(this.defaultComment);
     try {
       if (this.newPost.image != "" && this.newPost.footer != "") {
-        // De nieuwe post toevoegen aan de posts array en dan vertalen naar jason taal
+        // i add the new post to the posts array
         this.posts.push(this.newPost);
-        // de nieuwe versie van alle posts weer schrijven naar de posts
+        // here i translate the string to jason strings for the json file
         var JSONStringFile = JSON.stringify(this.posts);
         WriteFile(JSONStringFile, "Models", "PostJSON.json");
 
@@ -210,16 +213,19 @@ export default class AddPost extends Vue {
     }
   }
 
+  // id for a new post
   idNewPost(): String {
     return "" + this.posts.length;
   }
 
+  // this function allows me to immediately refresh an added post on post screen, which is why there is also goBack()
   onClose() {
     console.log("Adding new post: " + this.newPost.id);
     this.onAddPost(this.newPost);
     if (this.$modal) this.$modal.close();
   }
 
+  // go back with back button
   goBack() {
     if (this.$modal) this.$modal.close();
   }
