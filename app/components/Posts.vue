@@ -36,12 +36,12 @@
           >
             <!-- Username -->
             <GridLayout columns="1*, 7*, *" row="0" class="post-username">
-              <Image
+              <!-- <Image
                 col="0"
                 :src="profilePicture(post.username)"
                 class="post-profile-picture"
               >
-              </Image>
+              </Image> -->
               <Label :text="post.username" col="1"></Label>
               <!-- Remove Post Button -->
               <Image
@@ -113,6 +113,7 @@
       width="100%"
     >
       <Image
+        v-show="showAdd()"
         src="~/Images/add_btn.png"
         class="button-image"
         horizontalAlignment="right"
@@ -203,17 +204,19 @@ export default class Posts extends Vue {
     }
   }
 
-  // reading profilepicture of every user so I can display it in a post
-  profilePicture(username: String): String {
-    var user;
-    var pfp_url = "";
-    for (user in this.users) {
-      if (username == this.users[user].username) {
-        pfp_url = this.users[user].pfp_url;
-      }
-    }
-    return pfp_url;
-  }
+  // // reading profilepicture of every user so I can display it in a post
+  // profilePicture(username: String): String {
+  //   var user;
+  //   var pfp_url = "";
+  //   for (user in this.users) {
+  //     if (username == this.users[user].name) {
+  //       pfp_url = this.users[user].pfp_url;
+  //     }
+  //     console.log(this.users[user].name)
+  //     console.log(username)
+  //   }
+  //   return pfp_url;
+  // }
 
   // check if a post is of the current logged in User. if true -> you got the option to delete a post, if false -> no option
   showRemove(username: String): Boolean {
@@ -234,6 +237,7 @@ export default class Posts extends Vue {
     if (this.currentUser.role == "Student") {
       return true;
     }
+    console.log(this.currentUser.role)
     return false;
   }
 
