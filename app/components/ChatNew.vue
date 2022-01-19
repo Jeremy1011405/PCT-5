@@ -3,13 +3,16 @@
         <!-- text inputs field for user & view for message -->
         <!-- TODO: create function to check if user exists -->
         <Gridlayout rows="1*, auto, 1*, 1*, 7*" marginTop="10%" height="100%" width="100%" class="backgroundChats">
-            <TextField row="0" class="textfield" returnKeyType="next" autocapitalizationType="none" ref="Name" hint="Gebruikersnaam" @textChange="changeText"></TextField>
+            <TextField row="0" class="textfield" returnKeyType="done" autocapitalizationType="none" ref="Name" hint="Gebruikersnaam" @returnPress="ClearSuggestions()" @textChange="changeText"></TextField>
             <ScrollView class="textfield" row="1" ref="scrollView" width="92%">
                 <StackLayout width="92%">
-                    <Label v-for="suggestion in suggestions" :key="suggestion" :text="suggestion"/>
+                    <Gridlayout v-for="suggestion in suggestions" :key="suggestion.username" rows="auto" columns="auto, auto" padding="5" @tap="SuggestionClick(suggestion.username)">
+                        <Image column="0" :src="suggestion.pfp_url" class="chat-profile-pic"></Image>
+                        <Label column="2" :text="suggestion.username" verticalAlignment="center" marginLeft="10" fontWeight="bold" fontsize="18"/>
+                    </Gridlayout>
                 </StackLayout>
             </ScrollView>
-            <TextField row="2" class="textfield" ref="Message" hint="Bericht" returnKeyType="done"></TextField>
+            <TextField row="2" class="textfield" ref="Message" hint="Bericht" returnKeyType="send" @returnPress="openNewChat($event)" @tap="ClearSuggestions()"></TextField>
             <Button row="3" class="verzendbutton" text="Verzenden" @tap="openNewChat($event)"></Button>
         </GridLayout>
         <!-- actionbars top/bottom -->
@@ -59,8 +62,8 @@ export default class ChatNew extends Vue {
     JSONStringFile: string = "";
     PushChat!: Chat;
     @Prop() onAddNewChat!: any;
-    suggestions: Array<string> = [];
-    users: Array<string> = [];
+    suggestions: Array<newPerson> = [];
+    users: Array<newPerson> = [];
     // function to go back to previous screen
     goBack() {
         if (this.$modal) this.$modal.close();
@@ -79,12 +82,54 @@ export default class ChatNew extends Vue {
         let name = rawName.text.trim()
         let rawtxt: TextView = (this.$refs.Message as any).nativeView as TextView;
         let txt = rawtxt.text.trim()
+        let user!: any;
+        let tempID!: string;
+        let tempURL!: string;
 
         if (txt !== null && txt !== "" && name !== null && name !== "") {
-            let tempID = `${this.getRandomInt(99999999)}`
+
+            for(user in this.users){
+                console.log(this.users[user].username)
+                if(this.users[user].username == name){
+                    tempID = this.users[user].ID;
+                    tempURL = this.users[user].pfp_url;
+                    console.log("found")
+                    break;
+                }
+                tempID = `${this.getRandomInt(99999999)}`;
+                tempURL = "https://i.pinimg.com/236x/34/6e/1d/346e1df0044fd77dfb6f65cc086b2d5e.jpg"
+            }
+
+            var d = new Date();
+            let uur: string = "";
+            let minuten: string = "";
+            let dag: string = "";
+            let maand: string = "";
+
+            if(d.getHours() < 10){
+            uur = `0${d.getHours()}`
+            }
+            else{uur = `${d.getHours()}`}
+
+            if(d.getMinutes() < 10){
+            minuten = `0${d.getMinutes()}`
+            }
+            else{minuten = `${d.getMinutes()}`}        
+
+            if(d.getDate() < 10){
+            dag = `0${d.getDate()}`
+            }
+            else{dag = `${d.getDate()}`}
+
+            if((d.getMonth() + 1) < 10){
+            maand = `0${(d.getMonth() + 1)}`
+            }
+            else{maand = `${(d.getMonth() + 1)}`}        
+
+            let tijd: string = `${uur}:${minuten} ${dag}-${maand}-${d.getFullYear()}`
             let tempIDChat = `${this.getRandomInt(99999999)}`
             let newMessage = new Message(`${this.getRandomInt(99999999)}`, 5, null, null, txt, AppSettings.getString("LoggedinID"), tempID)
-            let newchat = new Chat(tempIDChat, AppSettings.getString("LoggedinID"), tempID, name, "https://i.pinimg.com/236x/34/6e/1d/346e1df0044fd77dfb6f65cc086b2d5e.jpg", [newMessage], txt, "nu")
+            let newchat = new Chat(tempIDChat, AppSettings.getString("LoggedinID"), tempID, name, tempURL, [newMessage], txt, tijd)
             let ChatsArray : Array<any>;
             //Chat information to JSON string
             this.PushChat = newchat;
@@ -114,8 +159,8 @@ export default class ChatNew extends Vue {
         console.log(FileContentChats)
         for (file in FileContentChats) {
             console.log(file)
-            console.log(`${FileContentChats[file].username}`)
-            this.users.push(`${FileContentChats[file].username}`)
+            console.log(`${FileContentChats[file]}`)
+            this.users.push(FileContentChats[file])
         }
     }
     changeText(){
@@ -129,15 +174,26 @@ export default class ChatNew extends Vue {
 
         if(Name.length != 0){
             for(Names in names){
-                console.log(names[Names].toLowerCase())
-                console.log(Levenshtein(Name, names[Names].toLowerCase()))
-                if(Levenshtein(Name.trim(), names[Names].toLowerCase().trim()) < (Name.length/2) || (names[Names].toLowerCase().trim().includes(Name.toLowerCase().trim())) && (Name.length > 2)){
-                    this.suggestions.push(names[Names])
-                    console.log(`these are the suggestions 1: ${this.suggestions}`)
+                console.log(names[Names].username.toLowerCase())
+                console.log(Levenshtein(Name, names[Names].username.toLowerCase()))
+                if(Levenshtein(Name.trim(), names[Names].username.toLowerCase().trim()) < (Name.length/2) || (names[Names].username.toLowerCase().trim().includes(Name.toLowerCase().trim()))){
+                    if(this.suggestions.length < 3){
+                        this.suggestions.push(names[Names])
+                        console.log(`these are the suggestions 1: ${this.suggestions}`)
+                    }
                 }
             }
         }
         console.log(`these are the suggestions 2: ${this.suggestions}`)
+    }
+    SuggestionClick(suggestionname: string){
+       let rawName: TextField = (this.$refs.Name as any).nativeView as TextField;
+       rawName.text =  suggestionname;
+       this.suggestions = [];
+       rawName.dismissSoftInput();
+    }
+    ClearSuggestions(){
+        this.suggestions = [];
     }
 }
 </script>
@@ -168,5 +224,14 @@ export default class ChatNew extends Vue {
 }
 .backgroundChats {
   background-color: rgb(239, 239, 239);
+}
+.chat-profile-pic {
+  width: 40;
+  height: 40;
+  border-radius: 90;
+  border-width: 1;
+  border-color: #757575;
+  object-fit: scale-down;
+  background-color: #ffffff;
 }
 </style>
