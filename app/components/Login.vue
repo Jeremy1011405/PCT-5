@@ -48,9 +48,10 @@
         for (user in JSONFileUsers){
           this.usersList.push(JSONFileUsers[user]);
         }
+        console.log("Test: " + JSONFileContent);
       }
     }
-
+  }
     //Changes the variable "accountaanvragen" that exists on Home.vue to true with the "acaangevraagd" method which makes
     // the request account screen appear.
     goToAanvragen() {
@@ -103,11 +104,23 @@
             userToJSON = new newPerson(this.usersList[index].username, this.usersList[index].pfp_url, this.usersList[index].name, this.usersList[index].email, this.usersList[index].password, this.usersList[index].description, this.usersList[index].role, this.usersList[index].ID);
             this.JSONString = `${JSON.stringify(userToJSON)}`;
             WriteFile(this.JSONString, "Models", "CurrentUserJSON.json");
-          
+            
+            let newUser: newPerson = new newPerson(
+            this.users[index].username,
+            this.users[index].pfp_url,
+            this.users[index].name,
+            this.users[index].email,
+            this.users[index].password,
+            this.users[index].description,
+            this.users[index].role,
+            this.users[index].ID
+            );
+            loggedin = true;
+            
             //Changes the variable "accountaanmaken" that exists on Home.vue to true with the "accountaangemaaktmethod"
             //method which makes the posts screen appear.
-            this.$emit("onLogin");
-            loggedIn = true;
+            console.log("Going to home!");
+            this.$emit("onLogin", newUser);
           }
         }
       }
@@ -121,5 +134,5 @@
       }
     }
   }
+}
 </script>
-

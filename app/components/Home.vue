@@ -7,7 +7,8 @@
       <AccountAanmaken row="1" v-show="accountaanmaken" @accountAangemaakt="accountaangemaaktmethod"/>
     </GridLayout>
     <GridLayout height="100%" width=100%>
-      <Posts row="1" v-show="loggedIn&&!accountaanvragen&&!accountaanmaken" @onLogin="login"/>
+      <Posts row="1" v-if="loggedIn && this.currentUser"
+          :currentUser="currentUser"/>
     </GridLayout>
     <GridLayout rows="2*, 12*, *" height="100%" width=100%>
       <ActionBarTop row="0" v-show="loggedIn"/>
@@ -26,7 +27,7 @@
   </Page>
 </template>
 
-<script lang="ts">  
+<script lang="ts">
 import Vue from "nativescript-vue";
 import { Component, Prop } from "vue-property-decorator";
 import ActionBarTop from "./ActionBars/ActionBarTop.vue";
@@ -36,15 +37,19 @@ import Login from "./Login.vue";
 import Posts from "./Posts.vue";
 import AccountAanmaken from "./AccountAanmaken.vue";
 import AccountAanvragen from "./AccountAanvragen.vue";
-import * as AppSettings from '@nativescript/core/application-settings';
-import {WriteFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
+import * as AppSettings from "@nativescript/core/application-settings";
+import {
+  WriteFile,
+  ReadFileSync,
+  FileExist
+} from "@/Models/FileSystemFunctions";
 import Post from "@/Models/Post";
 import newPerson from "@/Models/newPerson";
 
-if (!AppSettings.hasKey("Loggedin")){
+if (!AppSettings.hasKey("Loggedin")) {
   AppSettings.setBoolean("Loggedin", false);
 }
-if (!AppSettings.hasKey("accountRequested")){
+if (!AppSettings.hasKey("accountRequested")) {
   AppSettings.setBoolean("accountRequested", false);
 }
 
@@ -105,34 +110,66 @@ if (FileExist("Models", "UsersListJSON.json") != true){
 })
 export default class Home extends Vue {
   msg: string = "Home";
-  loggedIn: boolean = AppSettings.getBoolean("Loggedin");
+  loggedIn: boolean = false;
   accountaanvragen: boolean = false;
   accountaanmaken: boolean = false;
   loggedinprofile: string = "";
 
-  beforeMount(){
+  currentUser!: newPerson;
+
+  beforeMount() {
+    if (AppSettings.getBoolean("Loggedin")) {
+      this.currentUser = new newPerson(
+        AppSettings.getString("LoggedinUsername"),
+        AppSettings.getString("LoggedinPFPUrl"),
+        AppSettings.getString("LoggedinName"),
+        AppSettings.getString("LoggedinEmail"),
+        AppSettings.getString("LoggedinPassword"),
+        AppSettings.getString("LoggedinDescription"),
+        AppSettings.getString("LoggedinRole"),
+        AppSettings.getString("LoggedinID")
+      );
+      this.loggedIn = true;
+    }
     try {
-        if (FileExist("Models", "PostJSON.json") != true){
-          let basicPost = new Post("0", 2, "Hajar Akkouh" ,"~/Images/welcome.png" , "Welkom bij de Team Phidippides Chat App!", [])
-          let postArray: Array<Post> = [basicPost];      
-          let postString: string = JSON.stringify(postArray)
-          WriteFile(postString, "Models", "PostJSON.json");
-          console.log("post as a string: " + postString)
-          console.log(ReadFileSync("Models", "PostJSON.json"));
-          console.log("File not found, created new one!");
-          console.log(JSON.parse(ReadFileSync("Models", "PostJSON.json")));
-        }
+      if (FileExist("Models", "PostJSON.json") != true) {
+        let basicPost = new Post(
+          "0",
+          2,
+          "Hajar Akkouh",
+          "~/Images/welcome.png",
+          "Welkom bij de Team Phidippides Chat App!",
+          [],
+          []
+        );
+        let postArray: Array<Post> = [basicPost];
+        let postString: string = JSON.stringify(postArray);
+        WriteFile(postString, "Models", "PostJSON.json");
       }
-      catch (error){
-      console.log("an error has occured") 
-      }
+    } catch (error) {
+      console.log("an error has occured");
+    }
   }
 
-  profilepicture(){
-    return AppSettings.getString('LoggedinPFPUrl');
+  profilepicture() {
+    return AppSettings.getString("LoggedinPFPUrl");
   }
 
-  login() {
+  logout() {
+    console.log("Logging out!");
+    this.loggedIn = false;
+    AppSettings.setBoolean("Loggedin", false);
+    AppSettings.remove("LoggedinUsername");
+    AppSettings.remove("LoggedinPFPUrl");
+    AppSettings.remove("LoggedinName");
+    AppSettings.remove("LoggedinEmail");
+    AppSettings.remove("LoggedinPassword");
+    AppSettings.remove("LoggedinDescription");
+    AppSettings.remove("LoggedinRole");
+    AppSettings.remove("LoggedinID");
+  }
+
+  login(user: newPerson) {
     if (AppSettings.getBoolean("Loggedin") == true){
       AppSettings.setBoolean("Loggedin", false);
       this.loggedIn = false;
@@ -149,13 +186,14 @@ export default class Home extends Vue {
     else{
       AppSettings.setBoolean("Loggedin", true);
       this.loggedIn = true;
+      this.currentUser = user;
       this.loggedinprofile = this.profilepicture();
     }
   }
-  acaangevraagd(){
+  acaangevraagd() {
     this.accountaanvragen = !this.accountaanvragen;
   }
-  accountaangemaaktmethod(){
+  accountaangemaaktmethod() {
     this.accountaanmaken = !this.accountaanmaken;
   }
 }
@@ -187,13 +225,13 @@ export default class Home extends Vue {
   height: 20;
   margin-left: 40;
   margin-top: -4;
-  box-shadow: 6px 6px 6px rgba(0,0,0,155);
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 155);
 }
 
-.logoutbutton:active{
-    color:white;
-    background-color: rgb(21, 18, 110);
-    box-shadow: 6px 6px 6px rgba(0,0,0,200);
+.logoutbutton:active {
+  color: white;
+  background-color: rgb(21, 18, 110);
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 200);
 }
 
 .fas {
