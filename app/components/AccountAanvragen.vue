@@ -88,7 +88,7 @@
     
     //Creates a code that you have to send to the owner. It checks if a textfield is empty or not every button press.
     requestAccountMethod(args: TapGestureEventData) {
-      //Defines the TextFields
+      //Grabs the Textfield as objects.
       let voornaamTextField: TextField = (this.$refs.voornaam as any).nativeView as TextField;
       let achternaamTextField: TextField = (this.$refs.achternaam as any).nativeView as TextField;
       let emailadresTextField: TextField = (this.$refs.emailadres as any).nativeView as TextField;

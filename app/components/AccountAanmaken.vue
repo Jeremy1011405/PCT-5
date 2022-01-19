@@ -45,7 +45,9 @@
       }
     }
 
+    //Creates a new entity from newPerson and adds it to the jsonfile.
     createAccountMethod() {
+      //Grabs the Textfield as objects.
       let ToegangscodeTextField: TextField = (this.$refs.Toegangscode as any).nativeView as TextField;
       let UsernameTextField: TextField = (this.$refs.Username as any).nativeView as TextField;
       let FullnameTextField: TextField = (this.$refs.Fullname as any).nativeView as TextField;
@@ -53,13 +55,19 @@
       let WachtwoordTextField: TextField = (this.$refs.Wachtwoord as any).nativeView as TextField;
       let ProfielfotoURLTextField: TextField = (this.$refs.ProfielfotoURL as any).nativeView as TextField;
       let ProfielbeschrijvingTextField: TextField = (this.$refs.Profielbeschrijving as any).nativeView as TextField;
+
+      //Grabs the error messages as objects.
       let wrongLoginText = (this.$refs.inputManditory as any).nativeView;
       let gebruiktText = (this.$refs.algebruikt as any).nativeView;
       let verkeerdecode = (this.$refs.verkeerdecode as any).nativeView;
       let gelukt = (this.$refs.gelukt as any).nativeView;
+
+      //Defines the accesscode and a boolean.
       let thecode = "";
       let oneused = false;
 
+      //Trims the TextFields to ensure someone isn't only inputting unwanted spaces, or to ensure someone doesn't place
+      //a space by accident which makes logging in impossible.
       ToegangscodeTextField.text = ToegangscodeTextField.text.trim();
       UsernameTextField.text = UsernameTextField.text.trim();
       FullnameTextField.text = FullnameTextField.text.trim();
@@ -68,71 +76,58 @@
       WachtwoordTextField.text = WachtwoordTextField.text.trim();
       ProfielbeschrijvingTextField.text = ProfielbeschrijvingTextField.text.trim();
 
+      //Makes the error messages invisible.
       wrongLoginText.className = "opacityZero";
       verkeerdecode.className = "opacityZero";
       gebruiktText.className = "opacityZero";
       gelukt.className = "opacityZero";
 
+      //Changes the empty string of 'the code' to the actual accesscode. This ensures that it is absolutely impossible to
+      //create an account if you haven't requested an account yet.
       if (AppSettings.getBoolean("accountRequested") == true){
         thecode = AppSettings.getString("AccountAanvragenKey");
       }
       
-      // checkt of de texfields leeg zijn of niet
-      if (ToegangscodeTextField.text != ""){
-        ToegangscodeTextField.className = "textFieldCorrect";
-      }
-      if (ToegangscodeTextField.text == ""){
-        ToegangscodeTextField.className = "textFieldIncorrect";
-        wrongLoginText.className = "wrongInput";
-      }
-      if (UsernameTextField.text != ""){
-        UsernameTextField.className = "textFieldCorrect";
-      }
-      if (UsernameTextField.text == ""){
-        UsernameTextField.className = "textFieldIncorrect";
-        wrongLoginText.className = "wrongInput";
-      }
-      if (FullnameTextField.text != ""){
-        FullnameTextField.className = "textFieldCorrect";
-      }
-      if (FullnameTextField.text == ""){
-        FullnameTextField.className = "textFieldIncorrect";
-        wrongLoginText.className = "wrongInput";
-      }
-      if (EmailadresTextField.text != ""){
-        EmailadresTextField.className = "textFieldCorrect";
-      }
-      if (EmailadresTextField.text == ""){
-        EmailadresTextField.className = "textFieldIncorrect";
-        wrongLoginText.className = "wrongInput";
-      }
-      if (WachtwoordTextField.text != ""){
-        WachtwoordTextField.className = "textFieldCorrect";
-      }
-      if (WachtwoordTextField.text == ""){
-        WachtwoordTextField.className = "textFieldIncorrect";
-        wrongLoginText.className = "wrongInput";
-      }
+      //Checks if the TextFields aren't empty.
+      if (ToegangscodeTextField.text != ""){ ToegangscodeTextField.className = "textFieldCorrect"; }
+      if (ToegangscodeTextField.text == ""){ ToegangscodeTextField.className = "textFieldIncorrect"; wrongLoginText.className = "wrongInput"; }
+      if (UsernameTextField.text != ""){ UsernameTextField.className = "textFieldCorrect"; }
+      if (UsernameTextField.text == ""){ UsernameTextField.className = "textFieldIncorrect"; wrongLoginText.className = "wrongInput"; }
+      if (FullnameTextField.text != ""){ FullnameTextField.className = "textFieldCorrect"; }
+      if (FullnameTextField.text == ""){ FullnameTextField.className = "textFieldIncorrect"; wrongLoginText.className = "wrongInput"; }
+      if (EmailadresTextField.text != ""){ EmailadresTextField.className = "textFieldCorrect"; }
+      if (EmailadresTextField.text == ""){ EmailadresTextField.className = "textFieldIncorrect"; wrongLoginText.className = "wrongInput"; }
+      if (WachtwoordTextField.text != ""){ WachtwoordTextField.className = "textFieldCorrect"; }
+      if (WachtwoordTextField.text == ""){ WachtwoordTextField.className = "textFieldIncorrect"; wrongLoginText.className = "wrongInput"; }
 
+      //If the input required textfields aren't empty it will check if the access code is correct.
       if (ToegangscodeTextField.text != "" && UsernameTextField.text != "" && FullnameTextField.text != "" && EmailadresTextField.text != "" && WachtwoordTextField.text != ""){
         if (ToegangscodeTextField.text == thecode){
           this.usersUitJason();
           oneused = false;
+
+          //Checks if the username or email have been used before. If they have been used, it will show the corresponding error message in orange.
           for (var index in this.usersList){
             if (this.usersList[index].username.toLowerCase() == UsernameTextField.text.toLowerCase()){ gebruiktText.className = "alGebruikt"; UsernameTextField.className = "textFieldUsed"; oneused = true; }
             if (this.usersList[index].email.toLowerCase() == EmailadresTextField.text.toLowerCase()){ gebruiktText.className = "alGebruikt"; EmailadresTextField.className = "textFieldUsed"; oneused = true; }
           }
+
+          //If both the email and the username haven't been used before it will add the user to the json file.
           if (oneused == false){
+
+            //Checks if the profilepicture textfield is empty. If it is, it will use a standard picture.
             let url = ProfielfotoURLTextField.text;
             if (ProfielfotoURLTextField.text == ""){
               url = "https://i.pinimg.com/236x/34/6e/1d/346e1df0044fd77dfb6f65cc086b2d5e.jpg";
             }
 
+            //Checks if the profile description textfield is empty. If it is, it will use a standard description.
             let profileDescription = ProfielbeschrijvingTextField.text;
             if(ProfielbeschrijvingTextField.text == ""){
               profileDescription = "Leeg";
             }
 
+            //Makes the account created text visible and adds the user to the jsonfile.
             gelukt.className = "accountCreated";
             var JSONuserlist = JSON.parse(ReadFileSync("Models", "UsersListJSON.json"));
             JSONuserlist.push({
@@ -147,6 +142,8 @@
             })
             this.JSONString = JSON.stringify(JSONuserlist);
             WriteFile(this.JSONString, "Models", "UsersListJSON.json");
+
+            //Empty's the textfields and removes the access code and code to send to the owner from app settings.
             ToegangscodeTextField.text = "";
             UsernameTextField.text = "";
             FullnameTextField.text = "";
@@ -161,6 +158,7 @@
           }
 
         }
+        //If the access code is wrong it will make the error message appear and changes the error code textfield to red.
         else{
           verkeerdecode.className = "wrongInput";
           ToegangscodeTextField.className = "textFieldIncorrect";
