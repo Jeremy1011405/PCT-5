@@ -99,10 +99,15 @@ import {
 } from "@nativescript/core";
 
 import { Screen } from "@nativescript/core/platform";
-import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
+import {
+  WriteFile,
+  ReadFile,
+  ReadFileSync,
+  FileExist
+} from "@/Models/FileSystemFunctions";
 import newPerson from "@/Models/newPerson";
 import Comment from "@/Models/Comment";
-import * as AppSettings from '@nativescript/core/application-settings';
+import * as AppSettings from "@nativescript/core/application-settings";
 
 @Component({
   name: "Comment",
@@ -113,16 +118,18 @@ export default class Comments extends Vue {
   user!: newPerson;
   liked: Number[] = [];
   opened: String[] = [];
-  users!: Array<any>;
+  users: Array<any> = [];
 
   beforeMount() {
     var user;
-    var FileContentUser = JSON.parse(ReadFileSync("Models", "UsersListJSON.json"))
-    console.log(FileContentUser)
+    var FileContentUser = JSON.parse(
+      ReadFileSync("Models", "UsersListJSON.json")
+    );
+    console.log(FileContentUser);
     for (user in FileContentUser) {
-      console.log(user)
-      console.log(`${FileContentUser[user]}`)
-      this.users.push(`${FileContentUser[user]}`)
+      console.log(user);
+      console.log(`${FileContentUser[user]}`);
+      this.users.push(`${FileContentUser[user]}`);
     }
     this.user = this.getUser(this.comment.username);
   }
@@ -135,7 +142,7 @@ export default class Comments extends Vue {
 
     fs.spans.push(userSpan);
 
-    let text = this.comment.comment;
+    let text = this.comment.info;
     let arr = text.split(" ");
 
     for (let part of arr) {
@@ -189,7 +196,7 @@ export default class Comments extends Vue {
     if (found == undefined) {
       return new newPerson(
         "Anonymous",
-        "https://stickermaster.nl/30784-large_default/anonymous-sticker.jpg", 
+        "https://stickermaster.nl/30784-large_default/anonymous-sticker.jpg",
         "",
         "",
         "",
@@ -306,7 +313,6 @@ export default class Comments extends Vue {
   object-fit: scale-down;
   margin-right: 5;
 }
-
 
 .comment-container {
   background-color: rgb(255, 255, 255); // slightlylighter

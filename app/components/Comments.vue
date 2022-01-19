@@ -16,7 +16,11 @@
       padding="10"
     >
       <GridLayout col="0" class="comments-back-button-container" @tap="goBack">
-        <Image src="~/Images/back_btn.png" class="comments-back-button" tintColor="black"></Image>
+        <Image
+          src="~/Images/back_btn.png"
+          class="comments-back-button"
+          tintColor="black"
+        ></Image>
       </GridLayout>
       <GridLayout col="1" class="comments-info-container">
         <Label text="Opmerkingen" class="comments-info"></Label>
@@ -60,7 +64,8 @@
         <!-- Reply Button -->
         <GridLayout col="2">
           <Label
-            text="Plaatsen" marginTop="15"
+            text="Plaatsen"
+            marginTop="15"
             @tap="sendReply"
             class="reply-send-button"
             :isEnabled="canReply"
@@ -78,9 +83,14 @@ import { GridLayout, TapGestureEventData } from "@nativescript/core";
 import { Screen } from "@nativescript/core/platform";
 import Post from "@/Models/Post";
 import Comment from "@/components/Comment.vue";
-import {WriteFile, ReadFile, ReadFileSync, FileExist} from "@/Models/FileSystemFunctions";
+import {
+  WriteFile,
+  ReadFile,
+  ReadFileSync,
+  FileExist
+} from "@/Models/FileSystemFunctions";
 import newPerson from "@/Models/newPerson";
-import * as AppSettings from '@nativescript/core/application-settings';
+import * as AppSettings from "@nativescript/core/application-settings";
 
 @Component({
   name: "Comments",
@@ -94,7 +104,7 @@ export default class Comments extends Vue {
   currentUser!: newPerson;
   replyText: String = "";
   replyTarget: any = null;
-  users!: Array<any>;
+  users: Array<any> = [];
 
   get canReply() {
     let test1 = this.replyText.length > 0 && this.replyText != " ";
@@ -105,16 +115,18 @@ export default class Comments extends Vue {
 
   beforeMount() {
     var user;
-    var FileContentUser = JSON.parse(ReadFileSync("Models", "UsersListJSON.json"))
-    console.log(FileContentUser)
+    var FileContentUser = JSON.parse(
+      ReadFileSync("Models", "UsersListJSON.json")
+    );
+    console.log(FileContentUser);
     for (user in FileContentUser) {
-      console.log(user)
-      console.log(`${FileContentUser[user]}`)
-      this.users.push(`${FileContentUser[user]}`)
+      console.log(user);
+      console.log(`${FileContentUser[user]}`);
+      this.users.push(`${FileContentUser[user]}`);
     }
-    
+
     this.currentUser = new newPerson(
-      AppSettings.getString("LoggedinUsername"), 
+      AppSettings.getString("LoggedinUsername"),
       AppSettings.getString("LoggedinPFPUrl"),
       AppSettings.getString("LoggedinName"),
       AppSettings.getString("LoggedinEmail"),
@@ -122,7 +134,7 @@ export default class Comments extends Vue {
       AppSettings.getString("LoggedinDescription"),
       AppSettings.getString("LoggedinRole"),
       AppSettings.getString("LoggedinID")
-    );   
+    );
   }
 
   sh() {
@@ -145,20 +157,22 @@ export default class Comments extends Vue {
   sendReply(event: TapGestureEventData) {
     if (this.replyTarget != null) {
       console.log(this.replyTarget);
-      // Reply to a c1:
+      /// Reply to a c1:
       if (this.replyTarget.type == "c1") {
         let id_prefix = this.replyTarget.id;
         let new_id = `${id_prefix}-${this.replyTarget.comments.length}`;
         console.log(new_id);
+        //id: String, username: String, info: String, likes: String[], timestamp: String
         this.replyTarget.comments.push({
           id: new_id,
           type: "c2",
           mentions: [this.replyTarget.username],
           username: this.currentUser.username,
-          comment: this.replyText,
+          info: this.replyText,
           likes: 0,
           timestamp: this.getTimeStamp()
         });
+        this.replyTarget.comments = this.replyTarget.comments.slice();
       }
       // Reply to a c2:
       else if (this.replyTarget == "c2") {
@@ -173,7 +187,7 @@ export default class Comments extends Vue {
         type: "c1",
         mentions: [],
         username: this.currentUser.username,
-        comment: this.replyText,
+        info: this.replyText,
         likes: 0,
         timestamp: this.getTimeStamp(),
         comments: []
